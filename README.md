@@ -1,0 +1,1 @@
+This is my example of the "BattleShip" project in the Javascript section of "The Odin Project".
