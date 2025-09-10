@@ -9,8 +9,6 @@ let columns = 10;
 let playerBoats = [[],[]];
 let occupiedPoints = []
 let currentPlayer = 0;
-players.push(new Player("player"));
-players.push(new Player("player"));
 let mainContainer = document.createElement("div");
 mainContainer.id = "MainContainer";
 document.getElementsByTagName("body")[0].appendChild(mainContainer);
@@ -128,7 +126,13 @@ function displayBoard(rows, columns){
                                 currentPlayer = 0;
                                 startGame();
                             }else{
-                                displayBoard(rows,columns);
+                                if(players[1].type == "computer"){
+                                    players[1].setBoats(boatLengths);
+                                    currentPlayer = 0;
+                                    startGame();
+                                }else{
+                                    displayBoard(rows,columns);
+                                }
                             }
                         }
                     }
@@ -179,6 +183,10 @@ function opponentBoard(user){
 }
 
 function updateBoard(){
+    if(currentPlayer != 0 && players[currentPlayer].type == "computer")
+    {
+        players[opponentBoard(currentPlayer)].computerMove();
+    }
     for(let x = 0; x < rows; x++){
         let row = document.createElement("div");
         row.classList = "row";
@@ -192,9 +200,11 @@ function updateBoard(){
             let inMisses = misses.some(([_x, _y]) => _x === x && _y === y);
             let inHits = hits.some(([_x, _y]) => _x === x && _y === y);
             button.addEventListener("click", (e) => {
-                opponent.receiveAttack([x,y]);
+                if(players[currentPlayer].type == "player"){
+                    opponent.receiveAttack([x,y]);
+                }
                 if(opponent.allShipsSunk()){
-                    displayWinMessage();
+                        displayWinMessage();
                 }else{
                     currentPlayer = opponentBoard(currentPlayer);
                     mainContainer.innerHTML = "";
@@ -218,7 +228,11 @@ function updateBoard(){
     }
     let label = document.createElement("div");
     label.classList = "boardLabel";
-    label.innerHTML = "Player " + (currentPlayer + 1);
+    if(players[currentPlayer].type == "computer"){
+        label.innerHTML = "Player 2 (Computer) Has made a move. Click a button to continue";
+    }else{
+        label.innerHTML = "Player " + (currentPlayer + 1);
+    }
     label.style.width = "100%vw";
     label.style.height = "3rem";
     label.style.fontSize = "2rem";
@@ -229,4 +243,31 @@ function startGame(){
     updateBoard();
 }
 
-displayBoard(rows,columns);
+function getPlayerTypes(){
+    let button = document.createElement("button");
+    button.classList = "select";
+    button.innerHTML = "Player vs Player";
+    button.style.width = "6rem";
+    button.style.height = "6rem";
+    button.addEventListener("click", () => {
+        players.push(new Player("player"));
+        players.push(new Player("player"));
+        mainContainer.innerHTML = "";
+        displayBoard(rows,columns);
+    });
+    let buttontwo = document.createElement("button");
+    buttontwo.classList = "select";
+    buttontwo.innerHTML = "Player Vs Computer";
+    buttontwo.style.width = "6rem";
+    buttontwo.style.height = "6rem";
+    buttontwo.addEventListener("click", () => {
+        players.push(new Player("player"));
+        players.push(new Player("computer"));
+        mainContainer.innerHTML = "";
+        displayBoard(rows,columns);
+    });
+    mainContainer.appendChild(button);
+    mainContainer.appendChild(buttontwo);
+}
+
+getPlayerTypes();

@@ -89,8 +89,9 @@ class Player{
         return boatPos;
     }
 
-    computerMove(gameboard){
+    computerMove(){
         let notMoved = true;
+        let returnMove;
         while(notMoved){
             let attackRow = Math.floor(Math.random() * this.rows);
             let attackColumn = Math.floor(Math.random() * this.columns);
@@ -99,10 +100,12 @@ class Player{
             );
             if(!exists){
                 this._playerMoves.push([attackRow, attackColumn]);
-                gameBoard.receiveAttack([attackRow, attackColumn]);
+                this._gameBoard.receiveAttack([attackRow, attackColumn]);
+                returnMove = [attackRow, attackColumn]
                 notMoved = false;
             }
         }
+        return returnMove;
     }
 
     playerMove(attack){
